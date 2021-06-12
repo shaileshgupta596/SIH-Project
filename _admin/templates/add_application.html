@@ -1,0 +1,558 @@
+{% extends "admin_sidebar.html" %}
+{% block body %}
+
+
+
+
+<!----Attended Modal------>
+
+<div class="modal fade" id="stagedetailsModal" tabindex="-1" role="dialog" aria-labelledby="detailsModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog  modal-dialog-centered modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="detailsModalCenterTitle"><i class="fas fa-info-circle fa-lg"> Stage Details</i></h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body row" id="detailsContainer"  style="padding-bottom: 1rem;padding-left:3rem;padding-right: 3rem;">
+          
+          
+        <div class="container shadow p-3 mb-5 bg-white rounded">
+      <table class="table" id="stageDetailstable" style="font-size: 18px;">
+      <thead>
+        <tr>
+          <th scope="col"><i class="fas fa-stream" title="Stage No."> Stage No.</i></th>
+          <th scope="col"><i class="fas fa-building" title="Department ID"> Dept ID</i></th>
+          <th scope="col"><i class="fas fa-building" title="Department Name"> Dept Name</i></th>
+          <th scope="col"><i class="fas fa-clock" title="Number of Days to complete"> No. of Days</i></th>
+
+        </tr>
+      </thead>
+      <tbody id='stageTablebody'>
+        <tr>
+          <th scope="row">id3u40</th>
+          <td>11:34</td>
+          <td><button type="button" class="btn btn-outline-primary" data-toggle="modal" data-target="#staticBackdrop">Scan</button></td>
+          <td>--</td>
+        </tr> 
+      </tbody>
+    </table>
+
+
+     </div>  
+      </div>
+      <div class="modal-footer text-center">
+       <button type="button" class="btn btn-success" data-dismiss="modal">Done</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!----AttendedModal------>
+
+
+
+<ul class="nav nav-tabs" id="myTab" role="tablist">
+  <li class="nav-item ">
+    <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true" style="text-decoration: none;" onclick="loadapplications()"><span id="app_l">Applications List</span></a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false" style="text-decoration: none;"><span id="create_n">Create New Application </span></a>
+  </li>
+
+</ul>
+
+<div class="tab-content" id="myTabContent" style="padding-top: 20px;">
+ <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+    <div class="title">
+        <!--<h1 align="center">Applications List</h1>-->
+      </div>
+
+       <div class="container shadow p-3 mb-5 bg-white rounded">
+      <table class="table" id="apptable" style="font-size: 18px; text-align: center">
+      <thead>
+        <tr>
+          <th scope="col"><i class="fas fa-folder" title="Application ID" id="app_ID"> Application ID</i></th>
+          <th scope="col"><i class="fas fa-folder" title="Application Name" id="app_name"> Application Name</i></th>
+          <th scope="col"><i class="fas fa-stream" title="Stage List" id="stage_list"> Stage List</i></th>
+
+        </tr>
+      </thead>
+      <tbody id='workTbdy'>
+       <!-- <tr>
+          <th scope="row">id3u40</th>
+          <td>11:34</td>
+          <td><button type="button" class="btn btn-outline-primary" data-toggle="modal" data-target="#staticBackdrop">Scan</button></td>
+          <td>--</td>
+        </tr> -->
+      </tbody>
+    </table>
+
+
+     </div>
+  
+  </div>
+
+
+   <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+        
+    <div class="title">
+        <h1 align="center"><!--Add New Application--></h1>
+      </div>
+       
+    <form action="" method="post" id="add_application" style="padding-top: 20px;">
+  	<div class="container register-form">
+            <div class="form">
+                <div class="note">
+                    <p id="create_app">CREATE APPLICATION</p>
+                </div>
+
+                <div class="form-content">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <input type="text" class="form-control" placeholder="Application Name" name="appname" id = "appname" value="" onkeyup="enable_add()" required />
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <input type="text" class="form-control" placeholder="Application ID" name="appid" id = "appid"  value="" required/>
+                            </div>
+                           
+                        </div>
+                        <!--<div class="col-md-4">
+                             <select type="text" class="form-control priority" placeholder="Priority" id="priority" value="" required style="height: 48px;"   >
+                                <option value="default" id="set_pri">Set Priority</option>
+                                <option value="Normal" id="norm">Normal</option>
+                                <option value="High" id="high">High</option>
+                                </select>
+                                
+                           
+                        </div>-->
+                    </div>
+                    <fieldset>
+                        <legend align="left" id="add_stages">Add Stages</legend>
+                    <div class="row" id="mainRow">
+                        <div class = "stage_list w-100 row" style="margin-right:0px;margin-left:0px;">
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <select type="text" class="form-control deptSelect" placeholder="Department ID" onselect="enable_add()" 
+                                    id="deptid" name = "dept_id[]" value=""  required style="height: 48px;">
+                                    <option value="default" id="choose_dept">Choose Department</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                <input type="text" id="sih_no_of_days" class="form-control no_of_days" placeholder="Number of Days" name = "no_of_days[]" value="" onkeyup="enable_add()" required/>
+                                </div>
+                            </div>
+                            <div class="col-md-3 text-center">
+                                <button type="button" class="btnSub btn-success" onclick="add_stage(this);" style=" width: 100px; height: 40px;" disabled="true"><i class="fas fa-plus" title="Add Stage"></i></button>
+                            </div>
+                            <div class="col-md-3 text-center">
+                                <button type="button" class="btnSub btn-danger" onclick="remove_stage(this);" style=" width: 100px;  height: 40px;"><i class="fas fa-minus" title="Remove Stage"> </i></button>
+                            </div>
+                        </div>
+
+
+                    </div>
+                    </fieldset>
+                    <div class="col-md-12 text-center">
+                    <!--<button type="Submit" class="btnSubmit" id="add">Add</button>-->
+                        <button type="submit"class="btn btn-primary disabled" role="button" aria-disabled="true" id="add"><i class="fas fa-plus" title="Create Application"> Create Application</i></button>
+                    </div>
+                    <div class="col-md-12 text-center" style="padding-top: 10px;" id="Success">
+                    </div>
+                </div>
+            </div>
+        </div>
+</form>
+
+
+      
+
+  </div>
+
+
+
+</div>
+
+
+<script>  
+     
+      
+    
+           
+  function loadapplications(){
+      var table = document.getElementById("apptable").getElementsByTagName('tbody')[0];
+      table.innerHTML="";
+       
+       console.log("calllled");
+
+
+       $.post("{{url_for('backendapp.get_app_types')}}",
+                
+            function(response){
+                //check if what response is   
+                console.log(response);
+                var applist = response["appids"];
+ 
+                    for (i = 0; i < applist.length; i++) {
+                        
+                        
+                        
+                        var row = table.insertRow(0);
+                        var cell1 = row.insertCell(0);
+                        var cell2 = row.insertCell(1);
+                        var cell3 = row.insertCell(2);
+                        
+                        
+                        cell1.innerHTML = applist[i]['appid'];
+                        cell2.innerHTML = applist[i]['appname'];//appids[0].stageList[0].dept_id
+                        
+                        
+                        var btn = document.createElement("button");
+                        btn.innerHTML ='Stage Details';
+                        btn.classList.add("btn", "btn-primary");
+                        btn.setAttribute("role", "button");
+                        btn.setAttribute("data-toggle", "modal");
+                        btn.setAttribute("data-target", "#stagedetailsModal");
+                        
+                        (function () {
+                            var stage_list =JSON.stringify(applist[i]['stageList']); 
+                            btn.addEventListener("click", function() {  loadStageDetails(stage_list); }, false);
+                            
+                        }()); // immediate invocation
+                        
+                        cell3.append(btn);
+    
+                    }   
+       },"json");
+  
+}
+    
+loadapplications();
+    
+    
+function loadStageDetails(stage_list)
+    {
+        var stagetable = document.getElementById("stageDetailstable").getElementsByTagName('tbody')[0];
+        stagetable.innerHTML="";
+        var stageobj = JSON.parse(stage_list);
+        
+       
+        for (i = 0; i < stageobj.length ; i++) {
+
+            var row = stagetable.insertRow();
+            var cell1 = row.insertCell(0);
+            var cell2 = row.insertCell(1);
+            var cell3 = row.insertCell(2);
+            var cell4 = row.insertCell(3);
+            
+            var dept_stageId = stageobj[i]['dept_id'];
+            var dept_stageName = stageobj[i]['dept_name'];
+            
+            cell1.innerHTML = i+1;
+            cell2.innerHTML = dept_stageId;
+            cell3.innerHTML = dept_stageName;
+            cell4.innerHTML = stageobj[i]['no_of_days'];
+    
+            }
+            
+    }
+    
+    
+    
+    
+        
+    var dept_id_count = 0;    
+    function loaddepts(){
+        
+        
+        
+    var select =  document.getElementById("deptid");
+    var selectParent = select.parentNode;    
+      
+      console.log("calllled");
+       $.post("{{url_for('backendapp.get_dept_ids')}}",
+                
+                function(response){
+                  //check if what response is 
+           
+                    
+                var details = response["dept_ids"];
+                
+                    console.log(details);
+                
+           
+                    
+ 
+                     for(var i = 0;i < details.length;i++)
+                     {
+                         var opt = details[i]['dept_name']+' ('+details[i]['dept_id']+')';
+                         var el = document.createElement("option");
+                         el.textContent = opt;
+                         el.value =details[i]['dept_id'];
+                         select.appendChild(el);
+                     }
+
+                    var selectClone = select.cloneNode(true);
+                    var selectNew = document.createElement("select");
+                    selectNew.classList.add("form-control");
+                    selectNew.classList.add("deptSelect");
+                    selectNew.setAttribute("type","text");
+                    selectNew.setAttribute("name","dept_id[]");
+                    //selectNew.setAttribute("value","");
+                    selectNew.setAttribute("required","");
+                    selectNew.setAttribute("style","height: 48px;");
+                    selectNew.setAttribute("onchange","enable_add()");
+
+                    /*type="text" class="form-control" placeholder="Department ID" id="deptid" name="dept_id[]" value="" required="" style="height: 48px; display: none;"*/
+                    selectNew.innerHTML = selectClone.innerHTML;
+                    
+                    //select.style.display="none";
+                    selectParent.removeChild(select);
+                    selectParent.appendChild(selectNew);
+                    //alert(response);
+                
+              },"json");
+       console.log("SELECT AFTER FILL "+select.value);
+
+  
+}
+    
+    loaddepts();
+    function chk_dept()
+    {
+      var myForm = document.forms.add_application;
+       var myControls = myForm.elements['dept_id[]'];
+       console.log("SELECT AFTER FILL ");
+       console.log(myControls);
+    }
+
+
+</script>
+
+
+		
+<script type="text/javascript">
+  document.getElementById("appid").addEventListener("focusout", check_deptId);
+  var deptValid = false;
+  
+    function check_deptId(){
+
+  value = $("#appid").val();
+  var AddStage = document.getElementsByClassName("btnSub btn-success"); 
+  console.log(value);
+ 
+    var dataString = 'q=' +value;
+    /*var x = localStorage.getItem("url");*/
+    $.ajax({
+      type: "GET",
+      url: "{{url_for('backendapp.chk_appid')}}",
+      data: dataString,
+      cache: false,
+      success: function(response){
+        //check if what response is   
+          console.log(response);
+          if(response==="1"){
+              document.getElementById("appid").style.border = "1px solid green"
+              document.getElementById("Success").innerHTML = ""
+              deptValid = true;
+              //AddStage[0].setAttribute("disabled",false);
+              AddStage[0].removeAttribute("disabled");
+              enable_add();
+
+          }
+          else{
+              document.getElementById("appid").style.border = "1px solid Red"
+              document.getElementById("Success").style.color ="red";
+              document.getElementById("Success").innerHTML = "Application ID already exist"
+          }
+          //alert(response);
+      } 
+    });
+}
+
+ 
+
+function enable_add(){
+
+  var appname = document.getElementById("appname");
+  var selectDept = document.getElementsByClassName("deptSelect");
+  var no_of_days = document.getElementsByClassName("no_of_days");
+ 
+   
+  var AllDept = true;
+  var AllNoDays = true;
+
+  for (var i = 0; i < selectDept.length; i++) 
+  {
+    if(selectDept[i].value == "default"){
+      AllDept = false;
+      break;
+    }
+  }
+  for (var i = 0; i < no_of_days.length; i++) 
+  {
+    if(no_of_days[i].value == ""){
+      AllNoDays = false;
+      break;
+    }
+  }
+
+  
+  console.log(AllDept);
+  console.log(AllNoDays);
+  console.log(appname.value);
+  console.log(deptValid);
+  
+        if(AllNoDays && AllDept &&  appname.value && deptValid){
+            add.setAttribute("class","btn btn-primary active");
+            add.setAttribute("aria-disabled",false);
+            
+
+        }
+        else{
+          add.setAttribute("class","btn btn-primary disabled");
+            add.setAttribute("aria-disabled",true);
+            
+        }
+}
+    
+    function add_stage(element){
+        var clone = document.getElementsByClassName('stage_list')[0].cloneNode(true);
+        console.log(clone);
+        var newElement = document.createElement("div");
+        newElement.classList.add("stage_list");
+        newElement.classList.add("w-100");
+        newElement.classList.add("row");
+        newElement.style="margin-right:0px;margin-left:0px;";
+        newElement.innerHTML= clone.innerHTML;
+        element.parentNode.parentNode.parentNode.insertBefore(newElement, element.parentNode.parentNode.nextSibling);
+        add.setAttribute("class","btn btn-primary disabled");
+        add.setAttribute("aria-disabled",true);
+
+    }
+
+    function remove_stage(element)
+    {
+        var main_row = element.parentNode.parentNode.parentNode;
+        var row=element.parentNode.parentNode;
+        console.log(main_row.childNodes);
+        console.log(row);
+        if (main_row.childNodes[1]!=row) 
+        {
+            main_row.removeChild(row);
+        }
+        else
+        {
+            if (main_row.childNodes.length >3) 
+            {
+                main_row.removeChild(row);
+            }
+        }
+        enable_add();
+    }
+    
+    /*var url= localStorage.getItem("url");*/   
+        
+        $("#add").on("click",function myfunct(e){
+          if(add.getAttribute("aria-disabled") == "false"){
+            e.preventDefault();
+            var appid = document.getElementById("appid"); 
+            var appname = document.getElementById("appname");
+            pvalue = "Normal";
+            var selectDept = document.getElementsByClassName("deptSelect");
+            var no_of_days = document.getElementsByClassName("no_of_days");
+            //console.log(selectDept);
+            //console.log(selectDept.length);
+            
+            var aControl = [];
+            var n_days = [];
+            for (var i = 0; i < selectDept.length; i++) 
+            {
+              aControl.push(selectDept[i].value);
+              console.log(selectDept[i].value);
+            }
+            for (var i = 0; i < no_of_days.length; i++) 
+            {
+              n_days.push(no_of_days[i].value);
+              console.log(no_of_days[i].value);
+            }
+
+            console.log(pvalue);
+
+            $.post("{{url_for('backendapp.add_application')}}",{appid:appid.value,appname:appname.value,priority:pvalue,no_of_days:n_days,dept_id:aControl},
+                
+                function(response){
+        
+                    console.log(response);
+                    if(response == "1"){
+                        console.log("b"+response);
+                        
+                        //clear previous data in child also
+                        document.getElementById("Success").innerHTML = '<p type="text" id="Success" style="color: green; padding: 35px 70px;" >Application Added Successfully!</p> ';
+                        appid.value = "";
+                        appname.value = "";
+                        appid.style.border = "1px solid #ced4da"
+
+                        add.setAttribute("class","btn btn-primary disabled");
+                        add.setAttribute("aria-disabled",true);
+
+                        var selectAfterSuccess = document.getElementsByClassName("stage_list")[0];
+                        var selectAfterSuccessClone = selectAfterSuccess.cloneNode(true);
+                        var mainRow = document.getElementById("mainRow");
+                        var stageListNode = document.createElement("div");
+                        stageListNode.classList.add("stage_list");
+                        stageListNode.classList.add("w-100");
+                        stageListNode.classList.add("row");
+                        stageListNode.style="margin-right:0px;margin-left:0px;";
+                        stageListNode.innerHTML= selectAfterSuccessClone.innerHTML;
+                        mainRow.innerHTML="<span style='display:none;'></span>";
+                        mainRow.appendChild(stageListNode);
+                    }
+                    else {
+                            
+                        document.getElementById("Success").innerHTML = '<p type="text" id="Success" style="color: red; padding: 35px 70px;" >Oops, Something went wrong!</p> ';
+                        appid.value = "";
+                        appname.value = "";
+                        appid.style.border = "1px solid #ced4da"
+
+                        add.setAttribute("class","btn btn-primary disabled");
+                        add.setAttribute("aria-disabled",true);
+                        }
+     
+              },"json");
+          }
+        });
+</script>	
+
+<script src="{{ url_for('adminapp.static',filename='js/change_language.js')}}"></script>
+ <script type="text/javascript">
+      var lang = sessionStorage.getItem("lang");
+      if(lang === "nepali"){
+                change_lang();
+                }
+      function change_lang(){
+          app_ID.innerHTML = language.nep.appl_id;
+           app_name.innerHTML = language.nep.appl_name;
+           stage_list.innerHTML = language.nep.stage_list;
+           app_l.innerHTML = language.nep.appl_list;
+           add_stages.innerHTML = language.nep.add_stages;
+           
+           create_app.innerHTML = language.nep.create_app;
+           create_n.innerHTML = language.nep.create_new_app;
+           add.innerHTML = language.nep.create_app;
+           sih_no_of_days.placeholder = "दिनों की संख्या";
+           appid.placeholder =  "एप्लिकेशन आईडी";
+           appname.placeholder = "एप्लिकेशन नाम";
+          choose_dept.innerHTML = "विभाग चुनें";
+      }
+ </script>
+
+
+
+{% endblock %}

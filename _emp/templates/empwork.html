@@ -1,0 +1,626 @@
+{% extends "emp_sidebar.html" %}
+{% block body %}
+
+
+<script>
+         
+var bar;
+   
+  /*********************************ABHAY****************************************************************/  
+function alertAdmin(element,notificationid,email,file,from,time)
+        {
+            console.log("function alertAdmin Called");
+            $.post("{{url_for('backendapp.file_not_arrived_complain')}}",{notificationid:notificationid,email:email,file:file,from:from,time:time},
+                   function(response){
+                    //check if what response is  
+                    if(response["status"]==="1")
+                        {
+                            //element.target.parentNode.removeEventListener;
+                            element.parentNode.innerHTML='<i class="fas fa-check-square"> Alerted</i>';
+                        }
+
+            },"json");
+        }
+  /*********************************ABHAY****************************************************************/        
+function loadfiles(){
+      var email = '{{email}}';
+      var table = document.getElementById("worktable").getElementsByTagName('tbody')[0];
+      var table2 = document.getElementById("comptable").getElementsByTagName('tbody')[0];
+      var table3 = document.getElementById("arrfiles").getElementsByTagName('tbody')[0];
+      table.innerHTML="";
+      table2.innerHTML="";
+      table3.innerHTML="";
+      var d = new Date();
+      
+      console.log("function loadfiles calllled");
+       $.post("{{url_for('backendapp.get_emp_stats')}}",{email_id:email},
+                
+                function(response){
+                  //check if what response is   
+                   console.log(" load files response received");
+           
+                    console.log("-------------");
+                    console.log(response);
+           
+                    var currFiles = response["details"]["currFiles"];
+                    console.log("heowiwwwjeew"+currFiles.length)
+                    var prevFiles = response["details"]["prevFiles"];
+                    var arrfiles = response["details"]["incomingFiles"];
+                    //console.log(response["details"]["incomingFiles"]);
+                   // console.log(prevFiles);
+                  if(currFiles.length==0)
+                  {
+                    //  console.log(currFiles.length); 
+                      //var processthead = document.getElementById("processthead");
+                      table.innerHTML='<th scope="col">No files currently.</th>';
+                  }
+                  else
+                  {
+                    
+                    for (i = 0; i < currFiles.length; i++) {
+                        //console.log(currFiles[i]['fid']);
+                        var row = table.insertRow(0);
+                        var cell1 = row.insertCell(0);
+                        var cell2 = row.insertCell(1);
+                        var cell3 = row.insertCell(2);
+                        var cell4 = row.insertCell(3);
+                        
+                        
+                        cell1.innerHTML = currFiles[i]['fid'];
+                        cell2.innerHTML = currFiles[i]['timeArrived'];
+
+                    //    console.log(currFiles[i]["lastStep"]);
+
+                        if(currFiles[i]["lastStep"]== true){
+
+                           cell3.innerHTML = '<button type="button" class="btn btn-outline-primary" data-toggle="modal" data-target="#staticBackdrop" onclick="setfilename(\''+ currFiles[i]['fid'] +'\')">Done</button>';
+
+                        }else{
+
+                        if(currFiles[i]['delay'] > 0){
+                            cell3.innerHTML = '<button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#staticBackdrop" onclick="setfilename(\''+ currFiles[i]['fid'] +'\')">Forward</button>';
+                        }else{
+                            cell3.innerHTML = '<button type="button" class="btn btn-outline-primary" data-toggle="modal" data-target="#staticBackdrop" onclick="setfilename(\''+ currFiles[i]['fid'] +'\')">Forward</button>';
+                            
+                        }
+                      }
+                        
+                        cell4.innerHTML = currFiles[i]['delay']; 
+                    }
+                  }
+
+                    if(prevFiles.length == 0)
+                    {
+                       // console.log(prevFiles.length); 
+                        //var comthead = document.getElementById("comthead");
+                        table2.innerHTML='<th scope="col">No files currently.</th>';
+
+
+                    }
+                    else{
+
+                     
+                    for (i = 0; i < prevFiles.length; i++) {
+                        //console.log(prevFiles[i]);
+                        var row = table2.insertRow(0);
+                        var cell1 = row.insertCell(0);
+                        var cell2 = row.insertCell(1);
+                        var cell3 = row.insertCell(2);
+                        var cell4 = row.insertCell(3);
+                        var cell5 = row.insertCell(4);
+                        var cell6 = row.insertCell(5);
+                        var cell7 = row.insertCell(6);
+      
+                        
+                        cell1.innerHTML = prevFiles[i]['fid'];
+                        cell2.innerHTML = prevFiles[i]['timeArrived'];
+                        cell3.innerHTML = prevFiles[i]['timeCompleted'];
+                        if(prevFiles[i]['remark']==""){
+                           cell4.innerHTML = "-";
+                           
+                        } 
+                        else{
+                           cell4.innerHTML = prevFiles[i]['remark'];
+                        }
+                        //cell4.innerHTML = prevFiles[i]['remark']; 
+                        cell5.innerHTML = prevFiles[i]['nextDeptName']; 
+                        cell6.innerHTML = prevFiles[i]['to']; 
+                        cell7.innerHTML = prevFiles[i]['delay']; 
+                    }
+                  }
+                    
+
+                    if(Object.keys(arrfiles).length === 0 && arrfiles.constructor === Object){
+
+                      //console.log(prevFiles.length); 
+                        //var arrthead = document.getElementById("arrthead");
+                        table3.innerHTML='<th scope="col">No files currently.</th>';
+
+                    }
+                    else{
+                     
+                    console.log(arrfiles); 
+                    for (var key in arrfiles) {
+                        console.log(key);
+                        console.log(new Date(arrfiles[key]['time']).getTime()/1000);
+                        var from = String(arrfiles[key]["from"]).split(' ').join('_');
+                        var time = new Date(arrfiles[key]['time']).getTime()/1000;
+                        console.log("From "+from);
+                        var row = table3.insertRow(0);
+                        var cell1 = row.insertCell(0);
+                        var cell2 = row.insertCell(1);
+                        var cell3 = row.insertCell(2);
+                        var cell4 = row.insertCell(3);
+                        var cell5 = row.insertCell(4);
+                        var cell6 = row.insertCell(5);
+                        var cell7 = row.insertCell(6);
+      
+                        
+                       cell1.innerHTML = key;
+                       cell2.innerHTML =arrfiles[key]["from"];
+                       if(arrfiles[key]["from"]=="Barcode Generation Dept")
+                           {
+                               cell3.innerHTML = "-";
+                           }
+                        else{
+                           
+                            cell3.innerHTML = arrfiles[key]["fromDeptName"];     
+                        }
+                        
+                        if(arrfiles[key]["remark"]=="")
+                           {
+                               cell4.innerHTML = "-";
+                           }
+                        else{
+                           
+                            cell4.innerHTML = arrfiles[key]["remark"];     
+                        }
+                       cell5.innerHTML = arrfiles[key]["time"];
+                       cell6.innerHTML = '<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">Scan File</button>';
+                       if(arrfiles[key]['alert']===false)
+                           {
+                               cell7.innerHTML = '<button type="button" class="btn btn-primary"'+ 'onclick=alertAdmin(this,"'+key+email+'","'+email+'","'+key+'","'+from+'","'+time+'")>Send Alert</button>';
+                               //cell4.addEventListener('click',alertAdmin());
+                           
+                           }
+                       else
+                           {
+                               cell7.innerHTML = '<i class="fas fa-check-square "> Alerted</i>';
+                           }
+                         
+                    }
+                  }
+                
+              },"json");
+  
+}
+        
+        
+function myFunctionScan() {
+
+    console.log("my function Scan Called"); 
+    //var xmlhttp = new XMLHttpRequest();
+    var table = document.getElementById("worktable");
+    bar = document.getElementById("result").textContent;
+ 
+    var d = new Date();
+    var dept_id = "{{ session.get(email[:-10]+'_dept_id')}}";
+    var email = '{{email}}';
+
+    var dataString = {'bcodeTxt':bar,'deptID':dept_id,'email':email};
+    console.log('Data String......');
+    console.log(dataString);
+      
+      $.post("{{url_for('backendapp.bcode_entry')}}",{bcodeTxt:bar,deptID:dept_id,email:email},
+                
+                function(response){
+                  //check if what response is   
+                    console.log('function bcode entry response');
+                    if(response["status"]==="1"){
+                        loadfiles();
+                    }
+
+              },"json");
+  
+}
+        
+function setfilename(filename){
+    bar=filename;
+}
+        
+        
+function remarkfunct(){
+    var remarksend = document.getElementById("remark").value;
+    console.log("forward request send");
+    
+    var email = document.getElementById("email_drop").value ;
+    
+    console.log("---------geteinninvf");
+    console.log(email);
+ 
+    
+    if(document.getElementById("emp_forward").checked == true){
+        
+      var s =  document.getElementById("emp_forward").value;
+        
+        console.log(s);
+        
+        $.get("{{url_for('backendapp.same_dept_forward')}}",{nextEmp:email,remark:remarksend,filename:bar},
+                
+                function(response){
+                  //check if what response is   
+                    console.log(response);
+                    if(response["status"]==="1"){
+                        loadfiles();
+                    }
+                    
+                
+              },"json");
+        
+        
+        
+    }else{
+        
+        
+        $.get("{{url_for('backendapp.forward')}}",{remark:remarksend,filename:bar},
+                
+            
+            
+                function(response){
+                  //check if what response is   
+                    console.log(response);
+                    if(response["status"]==="1"){
+                        loadfiles();
+                    }
+                    
+                
+              },"json");
+        
+    }
+    
+    
+   /* if(){
+       
+       
+       
+       
+       
+       }else{
+       
+       
+       
+       
+       
+       
+       }*/
+
+    
+    
+    
+}
+    </script>
+  
+<!--END Script for add new row for a file--> 
+ 
+<body id="bod">
+
+<div class="container shadow p-3 mb-5 bg-white rounded">
+		
+<ul class="nav nav-tabs" id="myTab" role="tablist">
+  <li class="nav-item">
+    <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true" style="text-decoration: none; padding-top: 10px;" onclick="loadfiles();">Arrived File</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false" style="text-decoration: none; padding-top: 10px;" onclick="loadfiles();">Processing Files</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" id="contact-tab" data-toggle="tab" href="#contact" role="tab" aria-controls="contact" aria-selected="false" style="text-decoration: none; padding-top: 10px;" onclick="loadfiles();">Completed Files</a>
+  </li>
+</ul>
+<div class="tab-content" id="myTabContent">
+ <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+    <div class="title">
+       <!-- <h1 align="center">Arriving Files</h1>-->
+      </div>
+
+
+      <table class="table" id="arrfiles" style="font-size: 16px; text-align: center">
+      <thead id="arrthead">
+        <tr>
+          <th scope="col"><i class="fas fa-file-alt" > File ID</i></th>
+          <th scope="col"><i class="fas fa-user-tie" > From</i></th>
+          <th scope="col"><i class="fas fa-building" >  From Department</i></th>
+          <th scope="col"><i class="fas fa-sticky-note" >  Remark</i></th>
+          <th scope="col"><i class="fas fa-clock" > Arrival Time</i></th>
+          <th scope="col"><i class="fas fa-qrcode" > Scan File</i></th>
+          <th scope="col"><i class="fas fa-exclamation-triangle"> Not Received</i></th>
+
+        </tr>
+      </thead>
+      <tbody id='workTbdy'>
+        <tr>
+          <td id="loading"><i class="fas fa-spinner fa-lg"> Loading...</i></td>
+        </tr>
+        <!--  <tr>
+          <th scope="row">id3u40</th>
+          <td>11:34</td>
+          <td><button type="button" class="btn btn-outline-primary" data-toggle="modal" data-target="#staticBackdrop">Scan</button></td>
+          <td>--</td>
+        </tr> -->
+      </tbody>
+    </table>
+  
+  </div>
+
+
+   <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+        
+    <div class="title">
+      <!--  <h1 align="center">Processing Files</h1>-->
+      </div>
+
+
+      <table class="table" id="worktable" style="font-size: 18px; text-align: center">
+      <thead id="processthead">
+        <tr>
+          <th scope="col"><i class="fas fa-file-alt" > File ID</i></th>
+          <th scope="col"><i class="fas fa-clock" > Arrival Time</i></th>
+          <th scope="col"><i class="fas fa-share" > Forward</i></th>
+          <th scope="col"><i class="fas fa-clock" > Delay</i></th>
+
+        </tr>
+      </thead>
+      <tbody id='workTbdy'>
+          <!--  <tr>
+          <th scope="row">id3u40</th>
+          <td>11:34</td>
+          <td><button type="button" class="btn btn-outline-primary" data-toggle="modal" data-target="#staticBackdrop">Forward</button></td>
+          <td>--</td>
+        </tr>-->
+      </tbody>
+    </table>
+
+  </div>
+
+
+  <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
+           <div class="title">
+        <!--<h1 align="center">Completed Files</h1>-->
+      </div>
+
+
+      <table class="table" id="comptable" style="font-size: 18px; text-align: center">
+      <thead id="comthead">
+        <tr>
+          <th scope="col"><i class="fas fa-file-alt" > File ID</i></th>
+          <th scope="col"><i class="fas fa-clock" > Arrival Time</i></th>
+          <th scope="col"><i class="fas fa-hourglass-end" > Time Completed</i></th>
+          <th scope="col"><i class="fas fa-sticky-note" > Remark</i></th>
+          <th scope="col"><i class="fas fa-building" > Next Department</i></th>
+          <th scope="col"><i class="fas fa-user-tie" >  Forwarded To</i></th> 
+          <th scope="col"><i class="fas fa-clock" > Delay</i></th>
+
+        </tr>
+      </thead>
+      <tbody id='compTbdy'>
+       <!-- <tr>
+          <th scope="row">id3u40</th>
+          <td>11:34</td>
+          <td><button type="button" class="btn btn-outline-primary" data-toggle="modal" data-target="#staticBackdrop">Forward</button></td>
+          <td>--</td>
+        </tr>-->
+
+      </tbody>
+    </table>
+    
+  </div>
+
+
+</div>
+</div>
+<!-- Button trigger modal -->
+
+
+<!-- Model for forward button -->
+<div class="modal fade" id="staticBackdrop" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+          <h5 class="modal-title" id="staticBackdropLabel"><i class="fas fa-share fa-lg" > Forward To Next Stage</i></h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        
+            
+            <div>
+            <!-- remark ip-->
+            
+                <div class="form-group">
+                    <label for="remark"><i class="fas fa-sticky-note "> Remark:</i></label>
+                        <textarea class="form-control" rows="5" id="remark"  value="" required></textarea>
+                    
+            <div class="row justify-content-md-center shadow-sm p-3 mb-5 bg-white rounded font-weight-light" style="font-style:Andale ; font-size: 30px;">
+                
+                <!--<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                </button>-->
+                
+                <div class="checkbox">
+                <label style="font-size: 16px; font-weight: bold">
+                <input id="emp_forward" name="forward" type="radio" data-toggle="toggle" value="emp_forward" onclick="forwardSelect(this)" checked>
+                    Forward To Employee &nbsp;&nbsp;&nbsp;
+                </label>
+                </div>
+                    
+                <div class="checkbox disabled ">
+                        <label style="font-size: 16px; font-weight: bold;">
+                            <input id="dept_forward" name="forward" type="radio"  data-toggle="toggle" value="dept_forward" onclick="forwardSelect(this)">
+                            Forward To Next Department
+                        </label>
+                </div>
+                
+                <br><br>
+                
+                <select class="form-control-lg" id="email_drop" style="height: 45px;" onchange="enableConfirm(this)">
+                <option value="" disabled selected>Select Employee</option>
+                <!-- <option>01</option>
+                <option>02</option>
+                <option>03</option>
+                <option>04</option> -->
+              </select>
+                
+                
+                <script>
+                    
+                    function enableConfirm(s){
+                        console.log(s.value);
+                        
+                        document.getElementById("confirm_btn").disabled = false;
+                    }
+                    
+                
+                    function forwardSelect(sel){
+                        
+                        console.log(sel.value);
+                        if(sel.value == "emp_forward"){
+                           document.getElementById("email_drop").style.display ="block";
+                            document.getElementById("confirm_btn").disabled = true;
+                        }else{
+                           document.getElementById("email_drop").style.display ="none";
+                             document.getElementById("confirm_btn").disabled = false;
+                        }
+                    }
+                
+                
+                </script>
+        
+                <!--<input name="forward" type="radio" value="same_dept"/>
+                <input name="forward" type="radio" value="next_dept"/>
+                <label for="name"></label>-->
+                
+                  </div>
+                    </div>
+            
+            </div>
+         
+      </div>
+      <div class="modal-footer">
+        
+        <button type="button" id="confirm_btn" class="btn btn-outline-primary" data-dismiss="modal" onclick="remarkfunct()" disabled>Confirm</button>
+        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!--end modal for forward button-->
+    
+    
+    
+    <script>
+    
+    
+/* ------------------------------- load Department email Id's---------------------*/
+ 
+var dept_id = "{{session.get(email[:-10]+'_dept_id')}}";
+        
+        
+    
+function load_emp_email(){
+
+  var dropdown=document.getElementById("email_drop");
+
+  var emp_email = "{{session.get(email)}}"
+  $.get("{{url_for('backendapp.get_dept_employees')}}",{dept_id:dept_id},
+                
+                function(response){
+                  //check if what response is
+
+                  var employees = response["employees"];
+
+
+                     for(var i = 0;i < employees.length;i++)
+                     {
+                        if(employees[i]['email_id'] != emp_email)
+                        {
+                             var opt = employees[i]['email_id'];
+                             var el = document.createElement("option");
+                             el.textContent = opt;
+                             el.value =employees[i]['email_id'];
+                             dropdown.appendChild(el);
+                         }
+                     }
+
+                    
+                    //alert(response);
+                
+              },"json");
+
+    
+}    
+ 
+load_emp_email();
+               
+
+        
+    
+/* ------------------------------- load Department email Id's---------------------*/ 
+     
+    
+    
+    
+    
+    
+    
+    </script>    
+
+
+<!-- Modal for Scan File-->
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog  modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalCenterTitle"><i class="fas fa-qrcode fa-lg"> Scan File Barcode</i></h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body"  style="padding-bottom: 1rem">
+        <!-- Scanner Box-->
+      	<div class="row justify-content-md-center">
+    	<video muted autoplay id="video" playsinline="true" style="width:500px;height:500px;" poster="{{ url_for('static',filename='img/qr-scanner.jpg')}}"></video>
+  		</div>
+          <div id="result" style="align:centre; margin-top: 0rem"></div>
+  		<button class="btn btn-primary" id="go" style="align:centre; margin-top: 0.5rem;">Scan Barcode</button>
+        <button class="btn btn-primary" style="align:centre; margin-top: 0.5rem;" onclick="myFunctionScan()" data-dismiss="modal">Update Status</button>  
+          <!-- Scanner Box content end -->
+      </div>
+      <div class="modal-footer">
+       <!-- <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>-->
+      </div>
+    </div>
+  </div>
+</div>
+<!--end modal for scan-->
+    
+    
+  
+   <!-- <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='css/bootstrap.css')}}">-->
+<script async src="{{ url_for('static',filename='js/zxing.js')}}"></script>
+<script src="{{ url_for('static',filename='js/video.js')}}"></script>
+<!--<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>-->
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+<script type="text/javascript" src="{{ url_for('static',filename='js/bootstrap.min.js')}}"></script> 
+ 
+</body>
+<script>/*document.getElementById("bod").onload = loadfiles;*/
+window.onload= function () {
+  var loading = document.getElementById("loading");
+  loading.style.display = "none";
+  loadfiles();
+}
+</script>
+
+{% endblock %}
