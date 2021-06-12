@@ -30,7 +30,7 @@
 			- Histogram
 			- bar graph
 			- tables
-	- for above data reported can be generated in form of pdf.
+	- for above data report can be generated in form of pdf.
 	- above stats can filter based upon :
 			- particular file type
 			- Department
